@@ -13,21 +13,24 @@ fetchResultData();
 
 async function fetchResultData() {
   try {
-    // 只需一次网络请求
-    const response = await fetch("https://physarena-backend.onrender.com/api/all_data");
-    const data = await response.json();
-
-    // 现在的数据结构是正确的
+    const response = await fetch("https://physarena-backend.onrender.com/results");
+    data = await response.json();
     all_result_data = data["results"];
     competition_info = data["competition_info"];
-    secondary_data = data["secondary"];
-    competition_dates = data["competition_dates"];
+    const secondary_response = await fetch("https://physarena-backend.onrender.com/secondary");
+    secondary_data = await secondary_response.json();
 
-    // 这行代码现在可以正常工作了
+    const competition_dates_response = await fetch("https://physarena-backend.onrender.com/competition_dates");
+    competition_dates = await competition_dates_response.json();
+
+    // sort competitions by competitions_info[competition].index
     sortedCompetitions = Object.keys(all_result_data).sort((a, b) => competition_info[a].index - competition_info[b].index);
-
+    // Create competition tabs
     createCompetitionTabs();
-
+    
+    // Initialize first competition by default
+    //const firstCompetition = Object.keys(all_result_data)[0];
+    //selectCompetition(firstCompetition);
   } catch (error) {
     console.error('Error fetching results:', error);
   }
