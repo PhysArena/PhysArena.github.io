@@ -11,33 +11,38 @@ let competition_type_to_color = {
 fetchResultData();
 
 
-async function fetchResultData() {
+// 1. 全局变量先声明
+window.all_result_data   = {};
+window.secondary_data    = {};
+window.competition_dates = {};
+
+// 2. 统一的 fetch 入口（放在页面底部或 DOMContentLoaded 后）
+(async () => {
   try {
     const API = 'https://physarena-backend.onrender.com';
 
-    // 1. 获取结果数据
-    const res1 = await fetch(`${API}/results`);
-    const data = await res1.json();
-    window.all_result_data = data;
+    const [res1, res2, res3] = await Promise.all([
+      fetch(`${API}/results`),
+      fetch(`${API}/secondary`),
+      fetch(`${API}/competition_dates`)
+    ]);
 
-    // 2. 获取竞赛信息
-    const res2 = await fetch(`${API}/secondary`);
-    window.secondary_data = await res2.json();
-
-    // 3. 获取竞赛日期
-    const res3 = await fetch(`${API}/competition_dates`);
+    window.all_result_data   = await res1.json();
+    window.secondary_data    = await res2.json();
     window.competition_dates = await res3.json();
 
-    // 4. 排序竞赛
-    sortedCompetitions = Object.keys(window.all_result_data)
-      .sort((a, b) => window.all_result_data[a].competition_info[a].index - window.all_result_data[b].competition_info[b].index);
+    // 排序竞赛
+    const sorted = Object.keys(window.all_result_data)
+      .sort((a, b) => window.all_result_data[a].competition_info[a].index -
+                    window.all_result_data[b].competition_info[b].index);
 
-    // 5. 创建竞赛标签
+    // 手动触发初始化
+    window.sortedCompetitions = sorted;
     createCompetitionTabs();
-  } catch (error) {
-    console.error('Error fetching results:', error);
+  } catch (e) {
+    console.error('Fetch failed:', e);
   }
-}
+})();
 
 function addWarning(time_data) {
 	for (var key in time_data) {
