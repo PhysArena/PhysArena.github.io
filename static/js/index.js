@@ -10,32 +10,30 @@ let competition_type_to_color = {
 // Call the async function to start the process
 fetchResultData();
 
+
 async function fetchResultData() {
   try {
-    const response = await fetch("https://physarena-backend.onrender.com/results   ");
-    data = await response.json();
-	//all_result_data = data["results"];
-	//competition_info = data["competition_info"];
-	window.all_result_data  = data;
-	window.competition_info = data;
-	  
-	
-	  
-	const secondary_response = await fetch("https://physarena-backend.onrender.com/secondary   ");
-	  
-    //secondary_data = await secondary_response.json();
-	window.secondary_data = await secondary_response.json();
-	const competition_dates_response = await fetch("https://physarena-backend.onrender.com/competition_dates   ");
-	//competition_dates = await competition_dates_response.json();
-	window.competition_dates = await competition_dates_response.json();
-	// sort competitions by competitions_info[competition].index
-	sortedCompetitions = Object.keys(all_result_data).sort((a, b) => competition_info[a].index - competition_info[b].index);
-    // Create competition tabs
+    const API = 'https://physarena-backend.onrender.com';
+
+    // 1. 获取结果数据
+    const res1 = await fetch(`${API}/results`);
+    const data = await res1.json();
+    window.all_result_data = data;
+
+    // 2. 获取竞赛信息
+    const res2 = await fetch(`${API}/secondary`);
+    window.secondary_data = await res2.json();
+
+    // 3. 获取竞赛日期
+    const res3 = await fetch(`${API}/competition_dates`);
+    window.competition_dates = await res3.json();
+
+    // 4. 排序竞赛
+    sortedCompetitions = Object.keys(window.all_result_data)
+      .sort((a, b) => window.all_result_data[a].competition_info[a].index - window.all_result_data[b].competition_info[b].index);
+
+    // 5. 创建竞赛标签
     createCompetitionTabs();
-    
-    // Initialize first competition by default
-    //const firstCompetition = Object.keys(all_result_data)[0];
-    //selectCompetition(firstCompetition);
   } catch (error) {
     console.error('Error fetching results:', error);
   }
