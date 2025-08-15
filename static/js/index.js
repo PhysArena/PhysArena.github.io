@@ -12,30 +12,31 @@ fetchResultData();
 
 async function fetchResultData() {
   try {
-    // 统一域名
     const API = 'https://physarena-backend.onrender.com';
 
+    // 1. /results
     const res1 = await fetch(`${API}/results`);
     const data = await res1.json();
     window.all_result_data  = data;
-    window.competition_info = data;   // 后端已扁平化
+    window.competition_info = data;
 
+    // 2. /secondary
     const res2 = await fetch(`${API}/secondary`);
-    window.secondary_data   = await res2.json();
+    window.secondary_data = await res2.json();
 
+    // 3. /competition_dates
     const res3 = await fetch(`${API}/competition_dates`);
     window.competition_dates = await res3.json();
 
     // 排序竞赛
-    sortedCompetitions = Object.keys(all_result_data)
-      .sort((a, b) => competition_info[a].index - competition_info[b].index);
+    sortedCompetitions = Object.keys(window.all_result_data)
+      .sort((a, b) => window.competition_info[a].index - window.competition_info[b].index);
 
     createCompetitionTabs();
   } catch (error) {
     console.error('Error fetching results:', error);
   }
 }
-
 function addWarning(time_data) {
 	for (var key in time_data) {
 		if (time_data[key]) {
