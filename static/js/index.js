@@ -14,20 +14,18 @@ async function fetchResultData() {
   try {
     const response = await fetch("https://physarena-backend.onrender.com/results   ");
     data = await response.json();
-	//all_result_data = data["results"];
-	//competition_info = data["competition_info"];
+	all_result_data = data["results"];
+	competition_info = data["competition_info"];
 	  
-	window.all_result_data  = data;
-    window.competition_info = data;
+	
 	  
 	const secondary_response = await fetch("https://physarena-backend.onrender.com/secondary   ");
 	  
-    //secondary_data = await secondary_response.json();
-	window.secondary_data   = await secondary_response.json();
-	  
+    secondary_data = await secondary_response.json();
+	
 	const competition_dates_response = await fetch("https://physarena-backend.onrender.com/competition_dates   ");
-	//competition_dates = await competition_dates_response.json();
-	window.competition_dates = await competition_dates_response.json();
+	competition_dates = await competition_dates_response.json();
+	
 	// sort competitions by competitions_info[competition].index
 	sortedCompetitions = Object.keys(all_result_data).sort((a, b) => competition_info[a].index - competition_info[b].index);
     // Create competition tabs
